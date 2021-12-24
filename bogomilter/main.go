@@ -4,7 +4,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/phalaaxx/milter"
 	"io"
 	"io/ioutil"
 	"log"
@@ -14,6 +13,8 @@ import (
 	"os/exec"
 	"strings"
 	"syscall"
+
+	"github.com/phalaaxx/milter"
 )
 
 /* global variables */
@@ -139,10 +140,10 @@ func (b *BogoMilter) Body(m *milter.Modifier) (milter.Response, error) {
 /* NewObject creates new BogoMilter instance */
 func RunServer(socket net.Listener) {
 	// declare milter init function
-	init := func() (milter.Milter, uint32, uint32) {
+	init := func() (milter.Milter, milter.OptAction, milter.OptProtocol) {
 		return &BogoMilter{},
-			milter.OptAddHeader | milter.OptChangeHeader,
-			milter.OptNoConnect | milter.OptNoHelo | milter.OptNoRcptTo
+			(milter.OptAddHeader | milter.OptChangeHeader),
+			(milter.OptNoConnect | milter.OptNoHelo | milter.OptNoRcptTo)
 	}
 	// start server
 	if err := milter.RunServer(socket, init); err != nil {
